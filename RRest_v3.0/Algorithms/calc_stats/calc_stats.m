@@ -267,7 +267,7 @@ for group_no = 1 : length(group_names)
         BA.prop(alg_no) = sum(~isnan(rel_errors)/length(rel_errors));
         
         % calculate bias
-        BA.bias.val(alg_no) = nanmean(rel_errors);
+        BA.bias.val(alg_no) = mean(rel_errors,'omitmissing');
         
         % calculate bias CI
         n = no_subjs;    % sample size (no subjects)
