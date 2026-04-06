@@ -51,7 +51,7 @@ up.paths.slash_direction = filesep;     % usually a backslash for Windows, forwa
 % "up.paths.root_folder = 'C:\Documents\Data\';", then data will be saved
 % in the directory located at 'C:\Documents\Data\DATASETNAME\', where
 % "DATASETNAME" is the name of the dataset being analysed, e.g. "vortal_rest".
-up.paths.root_folder = 'C:\Documents\Data\';
+up.paths.root_folder = 'C:\Users\giuri\rrest-syn_mat\';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% LOAD PREVIOUS UNIVERSAL PARAMETERS %%%%%%%%

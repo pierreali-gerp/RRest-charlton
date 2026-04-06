@@ -79,7 +79,7 @@ for win_no = 1 : length(wins.t_start)
     %% Calc RR
 
     % Using average breath length
-    ave_breath_duration = nanmean(cycle_durations);
+    ave_breath_duration = mean(cycle_durations, 'omitmissing');
     rr.v(win_no) = 60/ave_breath_duration;
     
 end

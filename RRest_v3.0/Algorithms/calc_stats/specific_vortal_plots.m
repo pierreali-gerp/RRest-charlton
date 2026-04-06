@@ -185,7 +185,7 @@ for rel_el_no = 1 : length(rel_els)
     curr_bias = rel_bias(rel_el_no);
     curr_lloa = rel_lloa(rel_el_no);
     curr_uloa = rel_uloa(rel_el_no);
-    curr_data.ave = nanmean([curr_est(:), curr_ref(:)],2);
+    curr_data.ave = mean([curr_est(:), curr_ref(:)],2, 'omitmissing');
     curr_data.error = [curr_est(:) - curr_ref(:)];
     
     % setup figure

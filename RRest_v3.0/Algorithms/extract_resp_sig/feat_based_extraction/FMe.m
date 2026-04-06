@@ -174,7 +174,7 @@ am.t = mean([onsets.t, peaks.t], 2);
 am.v = [peaks.v - onsets.v];
 
 % Normalise
-feat_data.v = am.v./nanmean(am.v);
+feat_data.v = am.v./mean(am.v, 'omitmissing');
 feat_data.t = am.t;
 feat_data.fs = fs;
 
@@ -197,7 +197,7 @@ am.t = mean([onsets.t, peaks.t], 2);
 am.v = [peaks.v - onsets.v];
 
 % Normalise
-feat_data.v = bw.v./nanmean(am.v);
+feat_data.v = bw.v./mean(am.v, 'omitmissing');
 feat_data.t = bw.t;
 feat_data.fs = fs;
 
@@ -224,7 +224,7 @@ am.t = mean([onsets.t, peaks.t], 2);
 am.v = [peaks.v - onsets.v];
 
 % Normalise
-feat_data.v = bwm.v./nanmean(am.v);
+feat_data.v = bwm.v./mean(am.v, 'omitmissing');
 feat_data.t = bwm.t;
 feat_data.fs = fs;
 
@@ -241,7 +241,7 @@ fm.t = fm.t(~isnan(fm.t));
 fm.v = fm.v(~isnan(fm.v));
 
 % Normalise
-feat_data.v = fm.v./nanmean(fm.v);
+feat_data.v = fm.v./mean(fm.v, 'omitmissing');
 feat_data.t = fm.t;
 feat_data.fs = fs;
 

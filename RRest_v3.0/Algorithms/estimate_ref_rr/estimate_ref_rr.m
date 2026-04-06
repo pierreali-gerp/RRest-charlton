@@ -287,7 +287,7 @@ if strcmp(fieldnames(data(subj).ref.params), 'rr')
     rel_data = data(subj).ref.params.rr;
     for win_no = 1 : length(wins.t_start)
         rel_els = rel_data.t >= wins.t_start(win_no) & rel_data.t < wins.t_end(win_no);
-        rr_ref.v(win_no) = nanmean(rel_data.v(rel_els));
+        rr_ref.v(win_no) = mean(rel_data.v(rel_els), 'omitmissing');
     end
 end
 end
@@ -464,7 +464,7 @@ if sum(valid_cycles) == 0
     rr_cto = nan;
 else
     % Using average breath length
-    ave_breath_duration = nanmean(cycle_durations);
+    ave_breath_duration = mean(cycle_durations, 'omitmissing');
     rr_cto = 60/ave_breath_duration;
 end
 

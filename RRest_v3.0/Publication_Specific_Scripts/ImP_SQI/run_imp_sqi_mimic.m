@@ -289,7 +289,7 @@ for s = up.paramSet.subj_list
         rel_els = find(monitor_rr.t >= win_start & monitor_rr.t <= win_end);
         rel_data.t = monitor_rr.t(rel_els);
         rel_data.v = monitor_rr.v(rel_els);
-%         res.rr_mon(counter_no,1) = nanmean(rel_data.v);
+%         res.rr_mon(counter_no,1) = mean(rel_data.v, 'omitmissing');
         res.rr_mon(counter_no,1) = nanmedian(rel_data.v);
         
         clear rel_els rel_data win_start win_end  rel_imp
@@ -717,7 +717,7 @@ if sum(valid_cycles) == 0
     rr_cto = nan;
 else
     % Using average breath length
-    ave_breath_duration = nanmean(cycle_durations);
+    ave_breath_duration = mean(cycle_durations, 'omitmissing');
     rr_cto = 60/ave_breath_duration;
 end
 
@@ -1374,10 +1374,10 @@ for subj_no = 1 : length(rrs)
 end
 
 % calculate MAE
-BA.mae = nanmean(abs(errors));
+BA.mae = mean(abs(errors), 'omitmissing');
 
 % calculate bias
-BA.bias.val = nanmean(errors);
+BA.bias.val = mean(errors, 'omitmissing');
 BA.no_samps = sum(~isnan(errors));
 BA.prop_inacc1 = 100*sum(~isnan(errors) & abs(errors) < 1)/sum(~isnan(errors));
 BA.prop_inacc2 = 100*sum(~isnan(errors) & abs(errors) < 2)/sum(~isnan(errors));

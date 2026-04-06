@@ -800,7 +800,7 @@ for group_no = 1 : length(group_names)
         BA.prop(alg_no) = sum(~isnan(rel_errors)/length(rel_errors));
         
         % calculate bias
-        BA.bias.val(alg_no) = nanmean(rel_errors);
+        BA.bias.val(alg_no) = mean(rel_errors, 'omitmissing');
         
         % calculate bias CI
         n = no_subjs;    % sample size (no subjects)
@@ -1616,7 +1616,7 @@ for group_no = 1 : length(groups)
         error = win_data.est(rel_rows) - win_data.ref(rel_rows);
         
         % Mean Differences
-        mean_diff = nanmean(error);
+        mean_diff = mean(error, 'omitmissing');
         
         % SD of Differences
         rel_els = ~isnan(error);
@@ -1624,19 +1624,19 @@ for group_no = 1 : length(groups)
         
         % MAE
         abs_error = abs(error);
-        mae = nanmean(abs_error);
+        mae = mean(abs_error, 'omitmissing');
         rel_els = ~isnan(abs_error);
         sdae = std(abs_error(rel_els));
         
         % RMSE
-        rmse = sqrt(nanmean(error.^2));
+        rmse = sqrt(mean(error.^2, 'omitmissing'));
         
         % CP2
         cp2 = sum(~isnan(error) & abs(error)<2)/sum(~isnan(error));
         
         % Percentage Error
-        mean_ref_rr = nanmean(win_data.ref(rel_rows));
-        percerr = 100*nanmean(abs_error/mean_ref_rr);
+        mean_ref_rr = mean(win_data.ref(rel_rows), 'omitmissing');
+        percerr = 100*mean(abs_error/mean_ref_rr, 'omitmissing');
         
         % Prop Wins ref rr
         
@@ -2130,7 +2130,7 @@ for group_no = 1 : length(groups)
         alg_rel_data.errors = alg_rel_data.est - alg_rel_data.ref;
         
         % calculate bias
-        BA.bias.val(alg_no) = nanmean(alg_rel_data.errors);
+        BA.bias.val(alg_no) = mean(alg_rel_data.errors, 'omitmissing');
         
         % calculate bias CI
         n = length(unique(alg_rel_data.subj));    % sample size (no subjects)
@@ -2327,14 +2327,14 @@ for estRR_no = 1 : length(estRR_names)
     end
     
     % Mean Differences
-    mean_diff = nanmean(error);
+    mean_diff = mean(error, 'omitmissing');
     
     % SD of Differences
     rel_els = ~isnan(error);
     std_diff = std(error(rel_els));
     
     % Mean ref RR
-    mean_ref_rr = nanmean(ref_RRs.v);
+    mean_ref_rr = mean(ref_RRs.v, 'omitmissing');
     
     % Est RR
     est_rr = rel_estRRs.v;
@@ -2343,15 +2343,15 @@ for estRR_no = 1 : length(estRR_names)
     
     % MAE
     abs_error = abs(error);
-    mae = nanmean(abs_error);
+    mae = mean(abs_error, 'omitmissing');
     rel_els = ~isnan(abs_error);
     sdae = std(abs_error(rel_els));
     
     % RMSE
-    rmse = sqrt(nanmean(error.^2));
+    rmse = sqrt(mean(error.^2, 'omitmissing'));
     
     % Percentage Error
-    percerr = 100*nanmean(abs(est_rr-ref_rr)/mean_ref_rr);
+    percerr = 100*mean(abs(est_rr-ref_rr)/mean_ref_rr, 'omitmissing');
     
     % Prop Wins
     prop_wins = sum(~isnan(error))/length(error);
