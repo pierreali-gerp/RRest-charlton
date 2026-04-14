@@ -51,7 +51,7 @@ up.paths.slash_direction = filesep;     % usually a backslash for Windows, forwa
 % "up.paths.root_folder = 'C:\Documents\Data\';", then data will be saved
 % in the directory located at 'C:\Documents\Data\DATASETNAME\', where
 % "DATASETNAME" is the name of the dataset being analysed, e.g. "vortal_rest".
-up.paths.root_folder = 'C:\Users\giuri\rrest-syn_mat\';
+up.paths.root_folder = 'C:\Users\giuri\progetto_tesi\dati_rotonda\';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% LOAD PREVIOUS UNIVERSAL PARAMETERS %%%%%%%%
@@ -90,10 +90,12 @@ fprintf('\n--- Creating Universal Parameters ');
 % Specify the stages of the algorithms (best left alone):
 up.al.key_components = {'extract_resp_sig', 'estimate_rr', 'fuse_rr'};      % To run the analysis in full this should be: {'extract_resp_sig', 'estimate_rr', 'fuse_rr'}
 % Specify methods for extraction of respiratory signals (feature / filter, ecg / ppg):
-up.al.options.extract_resp_sig = {'ppg_feat', 'ppg_filt', 'ekg_feat', 'ekg_filt'};  % Possible methods: 'ppg_feat', 'ekg_feat', 'ppg_filt', 'ekg_filt'
+%up.al.options.extract_resp_sig = {'ppg_feat', 'ppg_filt', 'ekg_feat', 'ekg_filt'};  % Possible methods: 'ppg_feat', 'ekg_feat', 'ppg_filt', 'ekg_filt'
+up.al.options.extract_resp_sig = {'ekg_feat', 'ekg_filt'};  % Possible methods: 'ppg_feat', 'ekg_feat', 'ppg_filt', 'ekg_filt'
+
 % ------------------------------------------------------
 % Specify the components for feature-based extraction of respiratory signals:
-up.al.sub_components.ppg_feat = {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'};  % Should read: {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'}
+%up.al.sub_components.ppg_feat = {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'};  % Should read: {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'}
 up.al.sub_components.ekg_feat = {'EHF', 'RDt', 'FPt', 'FMe', 'RS', 'ELF'};  % Should read: {'EHF', 'RDt', 'FPt', 'FMe', 'RS', 'ELF'}
 % Specify the interchangeable technique(s) to be used for each component of feature-based extraction of respiratory signals:
 up.al.options.PDt = {'IMS'};                                                % Possible methods: 'DCl', 'COr', 'IMS'
@@ -103,7 +105,7 @@ up.al.options.FMe = {'am', 'fm', 'bw'};                                     % Po
 up.al.options.RS = {'linB'};                                                % Possible methods: 'cub', 'cubB', 'brg', 'lin', 'brgB', 'linB'
 % Specify the interchangeable technique(s) to be used for filter-based respiratory signal extraction:
 up.al.options.ekg_filt = {'Wfm', 'Wam', 'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
-up.al.options.ppg_filt = {'Wfm', 'Wam', 'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
+%up.al.options.ppg_filt = {'Wfm', 'Wam', 'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
 % Specify the interchangeable technique(s) for RR Estimation
 up.al.options.estimate_rr = {'FTS', 'ARS', 'ARM', 'ACF', 'WCH', 'PKS', 'ZeX', 'PZX', 'CtO', 'CtA'};       % Possible methods: 'FTS', 'ARS', 'ARM', 'ARP', 'ARPz', 'ACF', 'WCH', 'PKS', 'ZeX', 'PZX', 'CtO', 'CtA'
 % Different methods for fusion of RR estimates:
@@ -222,9 +224,12 @@ end
 up.paramSet.subj_list = 1:length(data);
 
 % Find out which sub and sub-sub group analyses need conducting
-up.paramSet.groups = extractfield(data, 'group');
-if sum(strcmp(fieldnames(data), 'sub_group'))
-    up.paramSet.sub_groups = extractfield(data, 'sub_group');
+fNames = fieldnames(data);
+if matches('group',fNames)
+    up.paramSet.groups = extractfield(data, 'group');
+    if sum(strcmp(fieldnames(data), 'sub_group'))
+        up.paramSet.sub_groups = extractfield(data, 'sub_group');
+    end
 end
 
 % Find out what ppg and ekg signals there are:
@@ -312,36 +317,39 @@ up.paramSet.CO_peak_det.upctl = 0.9;
 up.paramSet.CO_peak_det.lpctl = 0.1;
 
 % Determine how to obtain reference RRs:
-ref_fields = fieldnames(data(1).ref);
-if sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'paw'))
-    up.paramSet.ref_method = 'paw';
-elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'imp'))
-    up.paramSet.ref_method = 'imp_sqi';  % using the impedance SQI
-    % up.paramSet.ref_method = 'imp_agree'; % using the agreement between RRs derived from impedance using time- and freq-domain methods
-elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'unknown'))
-    up.paramSet.ref_method = 'imp_sqi';  % using the impedance SQI
-elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'band'))
-    up.paramSet.ref_method = 'band_agree'; % using the agreement between RRs derived from impedance using time- and freq-domain methods
-elseif sum(strcmp(ref_fields, 'breaths'))
-    up.paramSet.ref_method = 'breaths';
-elseif sum(strcmp(ref_fields, 'params')) && sum(strcmp(fieldnames(data(1).ref.params), 'rr'))
-    up.paramSet.ref_method = 'rrs';
+if matches('ref',fNames)
+    ref_fields = fieldnames(data(1).ref);
+    if sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'paw'))
+        up.paramSet.ref_method = 'paw';
+    elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'imp'))
+        up.paramSet.ref_method = 'imp_sqi';  % using the impedance SQI
+        % up.paramSet.ref_method = 'imp_agree'; % using the agreement between RRs derived from impedance using time- and freq-domain methods
+    elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'unknown'))
+        up.paramSet.ref_method = 'imp_sqi';  % using the impedance SQI
+    elseif sum(strcmp(ref_fields, 'resp_sig')) && sum(strcmp(fieldnames(data(1).ref.resp_sig), 'band'))
+        up.paramSet.ref_method = 'band_agree'; % using the agreement between RRs derived from impedance using time- and freq-domain methods
+    elseif sum(strcmp(ref_fields, 'breaths'))
+        up.paramSet.ref_method = 'breaths';
+    elseif sum(strcmp(ref_fields, 'params')) && sum(strcmp(fieldnames(data(1).ref.params), 'rr'))
+        up.paramSet.ref_method = 'rrs';
+    end
+
+    % Determine whether or not to calculate CCs:
+    if sum(strcmp(up.paramSet.ref_method, 'rrs')) || sum(strcmp(up.paramSet.ref_method, 'breaths'))
+        up.paramSet.calc_CCs = false;
+    else
+        up.paramSet.calc_CCs = true;
+    end
+
+    % Determine whether to calculate stats for impedance:
+    if sum(strcmp(fieldnames(data(1).ref), 'params')) && sum(strcmp(fieldnames(data(1).ref.params), 'rr')) ...
+            && sum(strcmp(fieldnames(data(1).ref.params.rr), 'method')) && ~isempty(strfind(data(1).ref.params.rr.method, 'impedance'))
+        up.analysis.imp_stats = true;
+    else
+        up.analysis.imp_stats = false;
+    end
 end
 
-% Determine whether or not to calculate CCs:
-if sum(strcmp(up.paramSet.ref_method, 'rrs')) || sum(strcmp(up.paramSet.ref_method, 'breaths'))
-    up.paramSet.calc_CCs = false;
-else
-    up.paramSet.calc_CCs = true;
-end
-
-% Determine whether to calculate stats for impedance:
-if sum(strcmp(fieldnames(data(1).ref), 'params')) && sum(strcmp(fieldnames(data(1).ref.params), 'rr')) ...
-        && sum(strcmp(fieldnames(data(1).ref.params.rr), 'method')) && ~isempty(strfind(data(1).ref.params.rr.method, 'impedance'))
-    up.analysis.imp_stats = true;
-else
-    up.analysis.imp_stats = false;
-end
 % Determine whether to calculate stats for synthetic data:
 if ~isempty(strfind(up.paths.root_data_folder, 'synth'))
     up.analysis.calc_synth_stats = true;
