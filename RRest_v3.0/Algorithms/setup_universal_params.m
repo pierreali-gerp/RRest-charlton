@@ -51,7 +51,7 @@ up.paths.slash_direction = filesep;     % usually a backslash for Windows, forwa
 % "up.paths.root_folder = 'C:\Documents\Data\';", then data will be saved
 % in the directory located at 'C:\Documents\Data\DATASETNAME\', where
 % "DATASETNAME" is the name of the dataset being analysed, e.g. "vortal_rest".
-up.paths.root_folder = 'C:\Users\giuri\progetto_tesi\dati_rotonda\';
+up.paths.root_folder = 'C:\Users\giuri\progetto_tesi\dataset_rotondaECG1\';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% LOAD PREVIOUS UNIVERSAL PARAMETERS %%%%%%%%
@@ -88,7 +88,7 @@ fprintf('\n--- Creating Universal Parameters ');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify the stages of the algorithms (best left alone):
-up.al.key_components = {'extract_resp_sig', 'estimate_rr', 'fuse_rr'};      % To run the analysis in full this should be: {'extract_resp_sig', 'estimate_rr', 'fuse_rr'}
+up.al.key_components = {'extract_resp_sig', 'estimate_rr'};      % To run the analysis in full this should be: {'extract_resp_sig', 'estimate_rr', 'fuse_rr'}
 % Specify methods for extraction of respiratory signals (feature / filter, ecg / ppg):
 %up.al.options.extract_resp_sig = {'ppg_feat', 'ppg_filt', 'ekg_feat', 'ekg_filt'};  % Possible methods: 'ppg_feat', 'ekg_feat', 'ppg_filt', 'ekg_filt'
 up.al.options.extract_resp_sig = {'ekg_feat', 'ekg_filt'};  % Possible methods: 'ppg_feat', 'ekg_feat', 'ppg_filt', 'ekg_filt'
@@ -97,15 +97,40 @@ up.al.options.extract_resp_sig = {'ekg_feat', 'ekg_filt'};  % Possible methods: 
 % Specify the components for feature-based extraction of respiratory signals:
 %up.al.sub_components.ppg_feat = {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'};  % Should read: {'EHF', 'PDt', 'FPt', 'FMe', 'RS', 'ELF'}
 up.al.sub_components.ekg_feat = {'EHF', 'RDt', 'FPt', 'FMe', 'RS', 'ELF'};  % Should read: {'EHF', 'RDt', 'FPt', 'FMe', 'RS', 'ELF'}
+% Descrizione (a cosa servono questi elementi):
+% EHF  - Elimination of High Frequencies: rimuove rumore ad alta frequenza dai segnali (es. filtro passa-basso).
+% PDt / RDt - Peak/ R-spike Detection: identifica i picchi caratteristici (battiti ECG o battiti PPG) necessari per estrarre caratteristiche temporali.
+% FPt  - Fiducial Point identification: individua punti di riferimento sui battiti (es. inizio/fine impulso) utili per misurazioni precise.
+% FMe  - Feature Measurement: calcola misure dai battiti (ampiezza, larghezza, area, ecc.) che variano con la respirazione.
+% RS   - Re-sampling: riscampiona le successioni di feature a una frequenza uniforme per l'analisi nel dominio del tempo o della frequenza.
+% ELF  - Elimination of Low Frequencies: rimuove tendenze a bassa frequenza (drift) per isolare la modulazione respiratoria.
 % Specify the interchangeable technique(s) to be used for each component of feature-based extraction of respiratory signals:
-up.al.options.PDt = {'IMS'};                                                % Possible methods: 'DCl', 'COr', 'IMS'
-up.al.options.RDt = {'GC'};                                                 % Possible methods: 'GC', 'ME'
-up.al.options.FMe = {'am', 'fm', 'bw'};                                     % Possible methods: 'pulW', 'am', 'fm', 'bw', 'pk', 'on', 'bwm', 'qrsW', 'qrsA', 'pca', 'qrS', 'rsS', 'Rang'
+%up.al.options.PDt = {'IMS'};                                                % Possible methods: 'DCl', 'COr', 'IMS'
+up.al.options.RDt = {'GC'};                                                 % ECG Beat detector; Possible methods: 'GC', 'ME'
+up.al.options.FMe = {'am', 'bw', 'fm', 'pk', 'qrsA'};                                     % Possible methods: 'pulW', 'am', 'fm', 'bw', 'pk', 'on', 'bwm', 'qrsW', 'qrsA', 'pca', 'qrS', 'rsS', 'Rang'
+%Amplitude Modulation (am , ref)  XB2
+%Frequency Modulation (fm , ref)  XB3
+%Baseline Wander (bw , ref)  XB1
+%Mean Baseline Wander (bwm , ref)  XB4
+%Peak Amplitude (pk , ref)  XB5
+%Trough Amplitude (on , ref)  XB6
+%QRS duration (qrsW , ref)  XB7
+%QRS area (qrsA , ref)  XB8
+%Principle Component Analysis (pca , ref)  XB9, ma nell'articolo dice che è KPCA
+%PPG Pulse Width (pulW , ref)  XB10
+
 % ------------------------------------------------------
-up.al.options.RS = {'linB'};                                                % Possible methods: 'cub', 'cubB', 'brg', 'lin', 'brgB', 'linB'
+up.al.options.RS = {'lin'};                                                % Possible methods: 'cub', 'cubB', 'brg', 'lin', 'brgB', 'linB'
 % Specify the interchangeable technique(s) to be used for filter-based respiratory signal extraction:
-up.al.options.ekg_filt = {'Wfm', 'Wam', 'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
+up.al.options.ekg_filt = {'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
+%Band-pass filtering (BFi , ref)
+%Filtering using the centred-correntropy function (CCF , ref)
+%Wavelet (CWT) extraction of frequency modulation (Wfm , ref)
+%Wavelet extraction (CWT) of amplitude modulation (Wam , ref)
+
 %up.al.options.ppg_filt = {'Wfm', 'Wam', 'BFi'};                             % Possible methods: 'Wfm', 'Wam', 'CCF', 'BFi'
+
+
 % Specify the interchangeable technique(s) for RR Estimation
 up.al.options.estimate_rr = {'FTS', 'ARS', 'ARM', 'ACF', 'WCH', 'PKS', 'ZeX', 'PZX', 'CtO', 'CtA'};       % Possible methods: 'FTS', 'ARS', 'ARM', 'ARP', 'ARPz', 'ACF', 'WCH', 'PKS', 'ZeX', 'PZX', 'CtO', 'CtA'
 % Different methods for fusion of RR estimates:
@@ -278,6 +303,8 @@ up.paramSet.elim_sub_cardiac.Dstop = 0.01;
 % Filter characteristics: Eliminate VLFs (below resp freqs): For 4bpm cutoff
 up.paramSet.elim_vlf.Fpass = 0.157;  % in Hz
 up.paramSet.elim_vlf.Fstop = 0.02;   % in Hz     (0.157 and 0.02 provide a - 3dB cutoff of 0.0665 Hz)
+% up.paramSet.elim_vlf.Fpass = 0.003;  % in Hz
+% up.paramSet.elim_vlf.Fstop = 0.0004;   % in Hz     (0.157 and 0.02 provide a - 3dB cutoff of 0.0665 Hz)
 up.paramSet.elim_vlf.Dpass = 0.05;
 up.paramSet.elim_vlf.Dstop = 0.01;
 % Filter characteristics: duration of Tukey window taper in secs
